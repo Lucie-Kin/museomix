@@ -229,7 +229,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: white;  /* Changed from purple to white */
+    background: white;
     position: relative;
 }
 
@@ -262,8 +262,8 @@ body {
     flex: 1;
     overflow-y: auto;
     padding: 10px;
-    margin-top: 50px; /* Add space for fixed header */
-    margin-bottom: 140px; /* Add space for buttons and input */
+    margin-top: 50px;
+    margin-bottom: 140px;
     background: white;
 }
 
@@ -285,7 +285,7 @@ body {
 
 .chat-buttons {
     position: fixed;
-    bottom: 70px; /* Position above input box */
+    bottom: 70px;
     left: 0;
     right: 0;
     display: flex;
@@ -300,18 +300,13 @@ body {
     padding: 10px 20px;
     border: none;
     border-radius: 20px;
-    background: white;
-    color: #4B0082;
-    border: 1px solid #4B0082;
+    background: #4B0082;
+    color: white;
     cursor: pointer;
+    margin: 0 10px;
     font-family: 'Funnel Display', sans-serif;
     font-size: 18px;
     font-weight: bold;
-}
-
-.response-btn.selected {
-    background: #4B0082;
-    color: white;
 }
 
 .chat-input {
@@ -350,25 +345,6 @@ body {
 #sendMessage img {
     width: 20px;
     height: 20px;
-}
-
-.chat-buttons {
-    display: flex;
-    justify-content: space-around;
-    padding: 10px;
-}
-
-.response-btn {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 20px;
-    background: #4B0082;
-    color: white;
-    cursor: pointer;
-    margin: 0 10px;
-    font-family: 'Funnel Display', sans-serif;
-    font-size: 18px;
-    font-weight: bold;
 }
 
 /* Page 7 - Response Message */
