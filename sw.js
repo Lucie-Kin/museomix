@@ -1,4 +1,4 @@
-const CACHE_NAME = 'static-v11';  // Incrémentation du numéro de version
+const CACHE_NAME = 'static-v11';
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -17,7 +17,8 @@ self.addEventListener('install', event => {
         '/rsc/art1.jpg',
         '/rsc/art2.jpg',
         '/rsc/art3.jpg',
-        '/rsc/bg_bric.jpg'
+        '/rsc/bg_bric.jpg',
+        '/rsc/bg_last.jpg'
       ]);
     })
   );

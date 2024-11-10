@@ -74,9 +74,9 @@ class PageManager {
             'rsc/art1.jpg',
             'rsc/art2.jpg',
             'rsc/art3.jpg',
-            'rsc/bg_last.jpg'
+            'rsc/bg_last.jpg'  // Add this line
         ];
-
+    
         let loadedCount = 0;
         
         resources.forEach(url => {
@@ -89,6 +89,7 @@ class PageManager {
                 }
             };
             img.onerror = () => {
+                console.error('Failed to load:', url);
                 loadedCount++;
                 if (loadedCount === resources.length) {
                     this.preloadDone = true;

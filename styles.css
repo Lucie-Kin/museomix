@@ -384,7 +384,7 @@ body {
     position: relative;
     width: 100%;
     height: 100vh;
-    background: url('rsc/bg_last.jpg') no-repeat center center;
+    background: url('../rsc/bg_last.jpg') no-repeat center center;  /* Update path if needed */
     background-size: cover;
     display: flex;
     justify-content: center;
