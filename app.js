@@ -429,7 +429,7 @@ class PageManager {
         const artwork = artworks[Math.floor(Math.random() * artworks.length)];
         return artwork;
     }
-    
+    /*
     initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
@@ -457,23 +457,53 @@ class PageManager {
         
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
+    }*/
+    addChatMessage(text) {
+        const messages = document.querySelector('.chat-messages');
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = text;
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
     }
-    /*initializeChat() {
+
+    initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
 
-        const bubble = document.createElement('div');
-        bubble.className = 'chat-bubble';
-        bubble.textContent = "Salut";
-        messages.appendChild(bubble);
+        // Premier message
+        this.addChatMessage("Salut");
 
+        // Ajout du titre
+        this.addChatMessage(`Vous avez photographié "${this.recognizedArtwork.title}"`);
+
+        // Ajout de l'artiste et la date
+        this.addChatMessage(`Une œuvre de ${this.recognizedArtwork.artiste} (${this.recognizedArtwork.date})`);
+
+        // Ajout de la provenance
+        this.addChatMessage(`${this.recognizedArtwork.provenance}`);
+
+        // Ajout de l'image miniature
+        const thumbnailBubble = document.createElement('div');
+        thumbnailBubble.className = 'chat-bubble';
+        const thumbnail = document.createElement('img');
+        thumbnail.src = this.recognizedArtwork.image;
+        thumbnail.style.width = '25px';
+        thumbnail.style.height = '40px';
+        thumbnailBubble.appendChild(thumbnail);
+        messages.appendChild(thumbnailBubble);
+
+        // Question finale
+        this.addChatMessage("J'ai un œil de lynx, n'est-ce pas ?");
+
+        // Activation des boutons
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
         document.getElementById('messageInput').disabled = true;
         
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
-    }*/
+    }
     
     handlePositiveResponse() {
         document.getElementById('yesBtn').style.display = 'none';
