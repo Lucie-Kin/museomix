@@ -4,7 +4,7 @@ class PageManager {
         this.currentPage = 1;
         this.pages = document.querySelectorAll('.page');
         this.preloadDone = false;
-        this.minAnimationTime = 12000; // 3s animation * 4 repetitions
+        this.minAnimationTime = 12000;
         this.animationStartTime = Date.now();
         this.cameraStream = null;
         this.animationCount = 0;
@@ -24,18 +24,15 @@ class PageManager {
             mainPath.addEventListener('animationiteration', () => {
                 this.animationCount++;
                 if (this.animationCount >= 4) {
-                    // Stop animations by removing them
                     const allElements = svgDoc.querySelectorAll('*');
                     allElements.forEach(element => {
                         element.style.animation = 'none';
                     });
                     
-                    // Fade out the logo
                     const logoContainer = document.querySelector('.logo-container');
                     logoContainer.style.transition = 'opacity 0.5s';
                     logoContainer.style.opacity = '0';
                     
-                    // Proceed to next page
                     setTimeout(() => {
                         this.goToPage(2);
                         this.setupPage2Animation();
@@ -44,20 +41,14 @@ class PageManager {
             });
         });
     }
+
     initializeEventListeners() {
-        // Camera permission buttons
         document.getElementById('cameraPermissionBtn').addEventListener('click', () => this.requestCamera());
         document.getElementById('retryPermissionBtn').addEventListener('click', () => this.requestCamera());
-        
-        // Camera capture
         document.getElementById('captureBtn').addEventListener('click', () => this.capturePhoto());
-        
-        // Chat buttons
         document.getElementById('yesBtn').addEventListener('click', () => this.handlePositiveResponse());
         document.getElementById('noBtn').addEventListener('click', () => this.handleNegativeResponse());
         document.getElementById('sendMessage').addEventListener('click', () => this.sendMessage());
-        
-        // Navigation buttons
         document.getElementById('converseCIAC').addEventListener('click', () => this.goToPage(5));
         document.getElementById('returnCamera').addEventListener('click', () => this.goToPage(5));
     }
@@ -106,7 +97,6 @@ class PageManager {
         const elapsedTime = currentTime - this.animationStartTime;
         
         if (elapsedTime >= this.minAnimationTime && this.preloadDone) {
-            // Fade out the logo
             const logo = document.querySelector('.logo-container');
             logo.style.transition = 'opacity 0.5s';
             logo.style.opacity = '0';
@@ -118,29 +108,11 @@ class PageManager {
         }
     }
 
-    goToPage(pageNumber) {
-        // Stop camera if leaving camera page
-        if (this.currentPage === 5 && pageNumber !== 5) {
-            this.stopCamera();
-        }
-        
-        this.pages.forEach(page => page.classList.remove('active'));
-        document.getElementById(`page${pageNumber}`).classList.add('active');
-        this.currentPage = pageNumber;
-
-        // Initialize page-specific features
-        if (pageNumber === 4) {
-            this.initializeBrickWall();
-        } else if (pageNumber === 5) {
-            this.initializeCamera();
-        } else if (pageNumber === 9) {
-            this.initializeScrollingWall();
-        }
-    }
-
     setupPage2Animation() {
         if (this.currentPage === 2) {
             const textLines = document.querySelectorAll('#page2 p');
+            
+            // Show text for 3 seconds before animation
             setTimeout(() => {
                 textLines.forEach((line, index) => {
                     if (index % 2 === 0) {
@@ -152,44 +124,26 @@ class PageManager {
                 
                 setTimeout(() => {
                     this.goToPage(3);
-                }, 250); // Animation time reduced to 250ms (half of 500ms)
-            }, 5000); // Wait time reduced to 5s (half of 10s)
+                }, 1000); // Slower animation duration
+            }, 3000); // Show duration reduced to 3s
         }
     }
 
-    initializeCamera() {
-        if (this.cameraStream) {
-            document.getElementById('cameraFeed').srcObject = this.cameraStream;
-        } else {
-            this.requestCamera();
+    goToPage(pageNumber) {
+        if (this.currentPage === 5 && pageNumber !== 5) {
+            this.stopCamera();
         }
-    }
+        
+        this.pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(`page${pageNumber}`).classList.add('active');
+        this.currentPage = pageNumber;
 
-    async requestCamera() {
-        try {
-            // Check if device is mobile
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const constraints = {
-                video: {
-                    facingMode: isMobile ? 'environment' : 'user'
-                }
-            };
-
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            this.cameraStream = stream;
-            document.getElementById('cameraFeed').srcObject = stream;
-            this.goToPage(5); // Changed from 4 to 5 to match flow
-        } catch (error) {
-            console.error('Camera access denied:', error);
-            document.querySelector('.camera-message').classList.add('hidden');
-            document.querySelector('.camera-denied').classList.remove('hidden');
-        }
-    }
-
-    stopCamera() {
-        if (this.cameraStream) {
-            this.cameraStream.getTracks().forEach(track => track.stop());
-            this.cameraStream = null;
+        if (pageNumber === 4) {
+            this.initializeBrickWall();
+        } else if (pageNumber === 5) {
+            this.initializeCamera();
+        } else if (pageNumber === 9) {
+            this.initializeScrollingWall();
         }
     }
 
@@ -217,8 +171,42 @@ class PageManager {
         }
     }
 
+    initializeCamera() {
+        if (this.cameraStream) {
+            document.getElementById('cameraFeed').srcObject = this.cameraStream;
+        } else {
+            this.requestCamera();
+        }
+    }
+
+    async requestCamera() {
+        try {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const constraints = {
+                video: {
+                    facingMode: isMobile ? 'environment' : 'user'
+                }
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            this.cameraStream = stream;
+            document.getElementById('cameraFeed').srcObject = stream;
+            this.goToPage(5);
+        } catch (error) {
+            console.error('Camera access denied:', error);
+            document.querySelector('.camera-message').classList.add('hidden');
+            document.querySelector('.camera-denied').classList.remove('hidden');
+        }
+    }
+
+    stopCamera() {
+        if (this.cameraStream) {
+            this.cameraStream.getTracks().forEach(track => track.stop());
+            this.cameraStream = null;
+        }
+    }
+
     initializeScrollingWall() {
-        // Similar to brick wall but with automatic scrolling
         this.initializeBrickWall();
         const bricks = document.querySelectorAll('.scrolling .brick');
         
@@ -258,14 +246,10 @@ class PageManager {
         const canvas = document.getElementById('photoCanvas');
         const context = canvas.getContext('2d');
 
-        // Set canvas size to match video
         canvas.width = video.videoWidth;
         canvas.height = video.videoHeight;
-
-        // Draw video frame to canvas
         context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        // Here you would add image recognition logic
         this.recognizeArtwork(canvas)
             .then(artwork => {
                 if (artwork) {
@@ -277,13 +261,32 @@ class PageManager {
     }
 
     async recognizeArtwork(canvas) {
-        // Simulate artwork recognition
-        // In a real app, you would integrate TensorFlow.js here
-        return {
-            id: 1,
-            title: "Sample Artwork",
-            image: "rsc/art1.jpg"
-        };
+        const artworks = [
+            {
+                id: 1,
+                title: "Sample Artwork 1",
+                image: "rsc/art1.jpg",
+                keywords: ["abstract", "geometric", "blue", "modern"],
+                description: "A contemporary piece exploring geometric forms"
+            },
+            {
+                id: 2,
+                title: "Sample Artwork 2",
+                image: "rsc/art2.jpg",
+                keywords: ["organic", "nature", "fluid", "green"],
+                description: "An organic composition inspired by natural forms"
+            },
+            {
+                id: 3,
+                title: "Sample Artwork 3",
+                image: "rsc/art3.jpg",
+                keywords: ["urban", "dynamic", "movement", "structure"],
+                description: "A dynamic interpretation of urban spaces"
+            }
+        ];
+
+        // Return a random artwork to simulate more lenient matching
+        return artworks[Math.floor(Math.random() * artworks.length)];
     }
 
     initializeChat() {
@@ -292,8 +295,9 @@ class PageManager {
 
         this.addChatMessage("Hello visitor");
         this.addChatMessage(`You've photographed ${this.recognizedArtwork.title}`);
+        this.addChatMessage(this.recognizedArtwork.description);
         
-        // Add artwork thumbnail
+        // Add artwork thumbnail with keywords
         const thumbnailBubble = document.createElement('div');
         thumbnailBubble.className = 'chat-bubble';
         const thumbnail = document.createElement('img');
@@ -301,6 +305,13 @@ class PageManager {
         thumbnail.style.width = '25px';
         thumbnail.style.height = '40px';
         thumbnailBubble.appendChild(thumbnail);
+        
+        // Add keywords
+        const keywordsPara = document.createElement('p');
+        keywordsPara.textContent = `Keywords: ${this.recognizedArtwork.keywords.join(', ')}`;
+        keywordsPara.style.marginTop = '5px';
+        thumbnailBubble.appendChild(keywordsPara);
+        
         messages.appendChild(thumbnailBubble);
 
         this.addChatMessage("I've got a sharp eye, right?");
@@ -334,7 +345,6 @@ class PageManager {
             this.addChatMessage(message);
             input.value = '';
             
-            // Transition to response wall after delay
             setTimeout(() => {
                 this.goToPage(7);
                 setTimeout(() => {
