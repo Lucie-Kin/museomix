@@ -1,17 +1,333 @@
+/* Base Typography Classes */
+.funnel-display-intro {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.funnel-display-title {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.funnel-display-body {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+}
+
 body {
-  margin: 0;
-  background-color: black;
-  color: #ddd;
-  font-family: Arial, sans-serif;
-  text-align: center;
-  padding-top: 50px;
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 300;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: black;
 }
 
-#app {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+/* Page Layout */
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: black;
+    color: white;
 }
 
+.page.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Logo Styles */
+.logo-container {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+    z-index: 2;
+}
+
+.logo-background {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    transform: scale(0);
+    opacity: 0;
+    animation: growCircle 1s ease 1s forwards;
+    z-index: 1;
+}
+
+/* Text Styles */
+.text-line {
+    font-size: 24px;
+    margin: 10px 0;
+    opacity: 0;
+    transform: translateX(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    text-align: center;
+    width: 100%;
+    padding: 0 20px;
+}
+
+/* Camera Styles */
+#camera-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: black;
+}
+
+#camera-feed {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#camera-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+    font-size: 24px;
+}
+
+#camera-error {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    display: none;
+}
+
+/* Brick Wall Styles */
+#brick-wall {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    background: white;
+}
+
+.brick {
+    position: absolute;
+    padding: 20px;
+    background: white;
+    border: 2px solid black;
+    margin: 5px;
+    white-space: nowrap;
+    animation: scrollBrick 20s linear infinite;
+}
+
+/* Chat Interface Styles */
+.chat-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+}
+
+.chat-header {
+    background: #4B0082;
+    color: white;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    height: 60px;
+}
+
+.chat-header img {
+    height: 40px;
+    margin-right: 10px;
+}
+
+.chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-bubble {
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 15px;
+    margin: 5px 0;
+    color: white;
+    background: #4B0082;
+    align-self: flex-start;
+}
+
+.message-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.message-button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 20px;
+    background: #4B0082;
+    color: white;
+    cursor: pointer;
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 500;
+}
+
+.chat-input {
+    padding: 10px;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chat-input input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 300;
+}
+
+.send-button {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #4B0082;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.send-button img {
+    width: 20px;
+    height: 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes growCircle {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes scrollBrick {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .text-line {
+        font-size: 20px;
+    }
+    
+    .message-bubble {
+        max-width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .text-line {
+        font-size: 18px;
+    }
+    
+    .chat-header {
+        height: 50px;
+    }
+    
+    .message-button {
+        padding: 8px 16px;
+    }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Transition Effects */
+.fade-transition {
+    transition: opacity 0.3s ease;
+}
+
+.slide-transition {
+    transition: transform 0.3s ease;
+}

@@ -1,10 +1,10 @@
 {
-  "name": "Museum App",
-  "short_name": "Museum",
+  "name": "Museum Interactive Guide",
+  "short_name": "Museum Guide",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
-  "theme_color": "#FFFFFF",
+  "theme_color": "#000000",
   "icons": [
     {
       "src": "icon-192.png",

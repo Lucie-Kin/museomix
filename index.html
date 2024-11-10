@@ -1,20 +1,165 @@
+<!-- index.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Museum App</title>
-  <link rel="stylesheet" href="styles.css">
-  <link rel="manifest" href="manifest.json">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Museum Interactive Guide</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="apple-touch-icon" sizes="180x180" href="rsc/favicon_io/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="rsc/favicon_io/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="rsc/favicon_io/favicon-16x16.png">
+    <link rel="manifest" href="rsc/favicon_io/site.webmanifest">
+    <!-- Funnel Display Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div id="app">
-   	<h1>Bienvenue dans l'application du musée</h1>
-	<p>Cliquez sur un des boutons pour explorer !</p>
-  	<button onclick="alert('Page 1')">Page 1</button>
-  	<button onclick="alert('Page 2')">Page 2</button>
-  </div>
-  <script src="app.js"></script>
+    <div id="page1" class="page active">
+        <div class="logo-container">
+            <img id="logoWhite" class="logo-image" src="rsc/ciac_logo-01.png" alt="CIAC Logo">
+            <div class="logo-background"></div>
+        </div>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="text-line funnel-display-intro">Vous allez être</div>
+        <div class="text-line funnel-display-intro">amener</div>
+        <div class="text-line funnel-display-intro">a photographier</div>
+        <div class="text-line funnel-display-intro">des oeuvres</div>
+    </div>
+
+    <script src="app.js"></script>
 </body>
 </html>
 
+<!-- styles.css -->
+/* Base Typography Classes */
+.funnel-display-intro {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-style: normal;
+}
+
+.funnel-display-title {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    font-style: normal;
+}
+
+.funnel-display-body {
+    font-family: "Funnel Display", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+}
+
+/* Existing CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Funnel Display", sans-serif;  /* Updated default font */
+    font-weight: 300;
+    font-optical-sizing: auto;
+    overflow: hidden;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+.page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background: black;
+    color: white;
+}
+
+.page.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-container {
+    width: 200px;
+    height: 200px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    opacity: 0;
+    animation: fadeIn 1s ease forwards;
+    z-index: 2;
+}
+
+.logo-background {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: white;
+    position: absolute;
+    transform: scale(0);
+    opacity: 0;
+    animation: growCircle 1s ease 1s forwards;
+    z-index: 1;
+}
+
+.text-line {
+    font-size: 24px;
+    margin: 10px 0;
+    opacity: 0;
+    transform: translateX(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+/* Camera error message */
+#camera-error {
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 500;
+    font-optical-sizing: auto;
+}
+
+/* Brick wall text */
+.brick {
+    font-family: "Funnel Display", sans-serif;
+    font-weight: 400;
+    font-optical-sizing: auto;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes growCircle {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
