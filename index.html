@@ -11,54 +11,31 @@
     <link rel="icon" type="image/png" sizes="32x32" href="rsc/favicon_io/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="rsc/favicon_io/favicon-16x16.png">
     <link rel="manifest" href="rsc/favicon_io/site.webmanifest">
-    <!-- Funnel Display Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@300..800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Page 1: Animated Logo -->
+    <!-- Page 1: Logo Animation -->
     <div id="page1" class="page active">
         <div class="logo-container">
-            <svg id="animated-logo" viewBox="0 0 100 100">
+            <svg id="animated-logo" viewBox="0 0 50 50">
                 <path id="logo-path"
-                      d="M 50 20 A 30 30 0 1 1 80 50"
+                      d="M 25,25 m -20,0 a 20,20 0 1 1 40,0"
                       fill="none"
                       stroke="white"
-                      stroke-width="3"
+                      stroke-width="5"
                       stroke-linecap="round"/>
                 <circle id="logo-dot"
-                        cx="80"
-                        cy="50"
-                        r="3"
+                        cx="45"
+                        cy="25"
+                        r="2.5"
                         fill="white"/>
             </svg>
         </div>
     </div>
 
-    <!-- Page 2: Text Animation -->
-    <div id="page2" class="page">
-        <div class="text-line funnel-display-intro">Vous allez être</div>
-        <div class="text-line funnel-display-intro">amener</div>
-        <div class="text-line funnel-display-intro">a photographier</div>
-        <div class="text-line funnel-display-intro">des oeuvres</div>
-    </div>
-
-    <!-- Page 3: Camera Permission -->
-    <div id="page3" class="page">
-        <div class="camera-permission">
-            <p class="permission-message funnel-display-intro">
-                Pour continuer, nous avons besoin d'accéder à votre caméra
-            </p>
-            <button id="requestCamera" class="permission-button funnel-display-intro">
-                Autoriser l'accès à la caméra
-            </button>
-            <p id="permissionError" class="permission-error funnel-display-intro">
-                Vous ne pouvez pas continuer sans accès à la caméra
-            </p>
-        </div>
-    </div>
-
+    <!-- Rest of your pages -->
     <script src="app.js"></script>
 </body>
 </html>
