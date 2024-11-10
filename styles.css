@@ -145,6 +145,7 @@ body {
     line-height: 30px;
 }
 
+
 .center-content {
     position: relative;
     z-index: 2;
@@ -153,12 +154,13 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
-    transform: translateY(-20px);
+    transform: translate(10px, -20px); /* Added 10px to the right */
 }
 
 .centered-logo {
     width: 200px;
     margin-bottom: 40px;
+    transform: translateX(10px); /* Move logo 10px right */
 }
 
 #converseCIAC {
@@ -171,6 +173,12 @@ body {
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Funnel Display', sans-serif;
+    font-weight: bold; /* Added bold */
+    transform: translate(10px, 40px); /* Move button 10px right and 40px down */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%); /* This ensures true center alignment */
+    margin-top: 40px; /* Added to move down by 40px */
 }
 
 /* Page 5 - Camera View */

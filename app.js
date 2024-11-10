@@ -8,6 +8,8 @@ class PageManager {
         this.animationStartTime = Date.now();
         this.cameraStream = null;
         this.animationCount = 0;
+        this.cameraInitialized = false;
+        this.torchTrack = null;
         
         this.initializeEventListeners();
         this.preloadResources();
@@ -42,6 +44,30 @@ class PageManager {
         });
     }
 
+    async turnOnFlash() {
+        if (this.torchTrack) {
+            try {
+                await this.torchTrack.applyConstraints({
+                    advanced: [{ torch: true }]
+                });
+            } catch (err) {
+                console.log('Flash not available:', err);
+            }
+        }
+    }
+
+    async turnOffFlash() {
+        if (this.torchTrack) {
+            try {
+                await this.torchTrack.applyConstraints({
+                    advanced: [{ torch: false }]
+                });
+            } catch (err) {
+                console.log('Error turning off flash:', err);
+            }
+        }
+    }
+
     initializeEventListeners() {
         document.getElementById('cameraPermissionBtn').addEventListener('click', () => this.requestCamera());
         document.getElementById('retryPermissionBtn').addEventListener('click', () => this.requestCamera());
@@ -49,11 +75,15 @@ class PageManager {
         document.getElementById('yesBtn').addEventListener('click', () => this.handlePositiveResponse());
         document.getElementById('noBtn').addEventListener('click', () => this.handleNegativeResponse());
         document.getElementById('sendMessage').addEventListener('click', () => this.sendMessage());
-        document.getElementById('converseCIAC').addEventListener('click', () => {
-            if (this.cameraStream) {
+        document.getElementById('converseCIAC').addEventListener('click', async () => {
+            if (this.cameraInitialized && this.cameraStream) {
                 this.goToPage(5);
             } else {
-                this.initializeCamera();
+                try {
+                    await this.requestCamera();
+                } catch (error) {
+                    console.error('Camera initialization failed:', error);
+                }
             }
         });
         document.getElementById('returnCamera').addEventListener('click', () => this.goToPage(5));
@@ -129,12 +159,57 @@ class PageManager {
                 
                 setTimeout(() => {
                     this.goToPage(3);
-                }, 1000); // Slower animation duration
-            }, 3000); // Show duration 3s
+                }, 1000);
+            }, 3000);
+        }
+    }
+
+    async requestCamera() {
+        try {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            const constraints = {
+                video: {
+                    facingMode: isMobile ? 'environment' : 'user'
+                }
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
+            this.cameraStream = stream;
+            this.cameraInitialized = true;
+            
+            // Get the video track and store it for torch control
+            const videoTrack = stream.getVideoTracks()[0];
+            const capabilities = videoTrack.getCapabilities();
+            
+            // Check if torch is available
+            if (capabilities.torch) {
+                this.torchTrack = videoTrack;
+                await this.turnOnFlash();
+            }
+
+            document.getElementById('cameraFeed').srcObject = stream;
+            this.goToPage(4);
+        } catch (error) {
+            console.error('Camera access denied:', error);
+            document.querySelector('.camera-message').classList.add('hidden');
+            document.querySelector('.camera-denied').classList.remove('hidden');
+            this.goToPage(3);
         }
     }
 
     goToPage(pageNumber) {
+        // Don't allow going back to animation pages
+        if (pageNumber <= 2 && this.currentPage > 2) {
+            return;
+        }
+
+        // Handle flash based on page
+        if (pageNumber === 5) {
+            this.turnOnFlash();
+        } else {
+            this.turnOffFlash();
+        }
+
         if (this.currentPage === 5 && pageNumber !== 5) {
             this.stopCamera();
         }
@@ -179,73 +254,19 @@ class PageManager {
     initializeCamera() {
         if (this.cameraStream) {
             document.getElementById('cameraFeed').srcObject = this.cameraStream;
-            this.goToPage(5);
+            this.turnOnFlash();
         } else {
             this.requestCamera();
         }
     }
 
-    async requestCamera() {
-        try {
-            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-            const constraints = {
-                video: {
-                    facingMode: isMobile ? 'environment' : 'user'
-                }
-            };
-
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            this.cameraStream = stream;
-            document.getElementById('cameraFeed').srcObject = stream;
-            // Change this line to go to page 4 instead of 5
-            this.goToPage(4);
-        } catch (error) {
-            console.error('Camera access denied:', error);
-            document.querySelector('.camera-message').classList.add('hidden');
-            document.querySelector('.camera-denied').classList.remove('hidden');
-        }
-    }
-
     stopCamera() {
+        this.turnOffFlash();
         if (this.cameraStream) {
             this.cameraStream.getTracks().forEach(track => track.stop());
             this.cameraStream = null;
+            this.torchTrack = null;
         }
-    }
-
-    initializeScrollingWall() {
-        this.initializeBrickWall();
-        const bricks = document.querySelectorAll('.scrolling .brick');
-        
-        bricks.forEach((brick, index) => {
-            const direction = index % 2 === 0 ? 1 : -1;
-            this.animateBrick(brick, direction);
-        });
-    }
-
-    animateBrick(brick, direction) {
-        const duration = 10000;
-        const start = brick.offsetLeft;
-        const distance = window.innerWidth;
-        let startTime = null;
-
-        const animate = (currentTime) => {
-            if (!startTime) startTime = currentTime;
-            const elapsed = currentTime - startTime;
-            const progress = elapsed / duration;
-
-            if (progress < 1) {
-                const position = start + (distance * progress * direction);
-                brick.style.left = `${position}px`;
-                requestAnimationFrame(animate);
-            } else {
-                brick.style.left = start + 'px';
-                startTime = null;
-                requestAnimationFrame(animate);
-            }
-        };
-
-        requestAnimationFrame(animate);
     }
 
     capturePhoto() {
@@ -292,7 +313,6 @@ class PageManager {
             }
         ];
 
-        // Return a random artwork to simulate more lenient matching
         return artworks[Math.floor(Math.random() * artworks.length)];
     }
 
@@ -321,12 +341,10 @@ class PageManager {
     
         this.addChatMessage("I've got a sharp eye, right?");
         
-        // Reset buttons state
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
         document.getElementById('messageInput').disabled = true;
         
-        // Ensure buttons are visible and enabled
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
     }
@@ -341,7 +359,6 @@ class PageManager {
     }
 
     handlePositiveResponse() {
-        // Don't hide the entire chat-buttons container, just the buttons
         document.getElementById('yesBtn').style.display = 'none';
         document.getElementById('noBtn').style.display = 'none';
         this.addChatMessage("Great! Let me ask you something about this artwork...");
@@ -367,6 +384,41 @@ class PageManager {
                 }, 3000);
             }, 1000);
         }
+    }
+
+    initializeScrollingWall() {
+        this.initializeBrickWall();
+        const bricks = document.querySelectorAll('.scrolling .brick');
+        
+        bricks.forEach((brick, index) => {
+            const direction = index % 2 === 0 ? 1 : -1;
+            this.animateBrick(brick, direction);
+        });
+    }
+
+    animateBrick(brick, direction) {
+        const duration = 10000;
+        const start = brick.offsetLeft;
+        const distance = window.innerWidth;
+        let startTime = null;
+
+        const animate = (currentTime) => {
+            if (!startTime) startTime = currentTime;
+            const elapsed = currentTime - startTime;
+            const progress = elapsed / duration;
+
+            if (progress < 1) {
+                const position = start + (distance * progress * direction);
+                brick.style.left = `${position}px`;
+                requestAnimationFrame(animate);
+            } else {
+                brick.style.left = start + 'px';
+                startTime = null;
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
     }
 }
 
