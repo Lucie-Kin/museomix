@@ -161,6 +161,9 @@ body {
     width: 100%;
     height: 100%;
     background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .camera-overlay {
@@ -177,25 +180,35 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
+/* Fixed camera button styles */
 .camera-controls {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     left: 0;
     right: 0;
     text-align: center;
-    z-index: 2;
+    z-index: 1000;
+    pointer-events: auto;
 }
 
-#captureBtn {
+.capture-btn {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 70px;
     height: 70px;
     background-color: white;
     border-radius: 50%;
     border: none;
     cursor: pointer;
-    margin: 0 auto;
+    z-index: 1000;
+    display: block !important;
 }
 
 /* Page 6 - Chat Interface */

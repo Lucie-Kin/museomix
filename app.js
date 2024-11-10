@@ -49,7 +49,13 @@ class PageManager {
         document.getElementById('yesBtn').addEventListener('click', () => this.handlePositiveResponse());
         document.getElementById('noBtn').addEventListener('click', () => this.handleNegativeResponse());
         document.getElementById('sendMessage').addEventListener('click', () => this.sendMessage());
-        document.getElementById('converseCIAC').addEventListener('click', () => this.goToPage(5));
+        document.getElementById('converseCIAC').addEventListener('click', () => {
+            if (this.cameraStream) {
+                this.goToPage(5);
+            } else {
+                this.initializeCamera();
+            }
+        });
         document.getElementById('returnCamera').addEventListener('click', () => this.goToPage(5));
     }
 
@@ -112,7 +118,6 @@ class PageManager {
         if (this.currentPage === 2) {
             const textLines = document.querySelectorAll('#page2 p');
             
-            // Show text for 3 seconds before animation
             setTimeout(() => {
                 textLines.forEach((line, index) => {
                     if (index % 2 === 0) {
@@ -125,7 +130,7 @@ class PageManager {
                 setTimeout(() => {
                     this.goToPage(3);
                 }, 1000); // Slower animation duration
-            }, 3000); // Show duration reduced to 3s
+            }, 3000); // Show duration 3s
         }
     }
 
@@ -174,6 +179,7 @@ class PageManager {
     initializeCamera() {
         if (this.cameraStream) {
             document.getElementById('cameraFeed').srcObject = this.cameraStream;
+            this.goToPage(5);
         } else {
             this.requestCamera();
         }
@@ -191,7 +197,8 @@ class PageManager {
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
             this.cameraStream = stream;
             document.getElementById('cameraFeed').srcObject = stream;
-            this.goToPage(5);
+            // Change this line to go to page 4 instead of 5
+            this.goToPage(4);
         } catch (error) {
             console.error('Camera access denied:', error);
             document.querySelector('.camera-message').classList.add('hidden');
@@ -297,7 +304,6 @@ class PageManager {
         this.addChatMessage(`You've photographed ${this.recognizedArtwork.title}`);
         this.addChatMessage(this.recognizedArtwork.description);
         
-        // Add artwork thumbnail with keywords
         const thumbnailBubble = document.createElement('div');
         thumbnailBubble.className = 'chat-bubble';
         const thumbnail = document.createElement('img');
@@ -306,7 +312,6 @@ class PageManager {
         thumbnail.style.height = '40px';
         thumbnailBubble.appendChild(thumbnail);
         
-        // Add keywords
         const keywordsPara = document.createElement('p');
         keywordsPara.textContent = `Keywords: ${this.recognizedArtwork.keywords.join(', ')}`;
         keywordsPara.style.marginTop = '5px';
