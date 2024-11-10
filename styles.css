@@ -138,9 +138,7 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
-    padding: 0 20px;  /* Add padding to prevent button from touching edges */
 }
-
 
 .centered-logo {
     width: 200px;
@@ -159,13 +157,11 @@ body {
     text-transform: uppercase;
     font-family: 'Funnel Display', sans-serif;
     font-weight: bold;
-    position: absolute;  /* Changed from relative to absolute */
+    position: relative;
     left: 50%;
-    transform: translateX(-40%);  /* Adjusted offset to move right */
+    transform: translateX(-50%);
     margin-top: 40px;
-    width: auto;  /* Let the button size to its content */
-    min-width: 200px;  /* Ensure minimum width */
-    text-align: center;  /* Ensure text is centered in button */
+    text-align: center;
 }
 
 .brick-container {
