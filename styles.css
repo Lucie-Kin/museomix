@@ -376,20 +376,69 @@ body {
 .scrolling-wall {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     overflow: hidden;
+    background: #000000;
+}
+
+.scrolling-content {
+    display: flex;
+    position: absolute;
+    height: 100%;
+    will-change: transform;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.content-line {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 300px;
+    height: 100%;
+}
+
+.scroll-image {
+    position: absolute;
+    height: 45vh;
+    width: auto;
+    left: -20%;
+    right: -20%;
+}
+
+.scroll-image:first-child {
+    top: 0;
+    transform: translateY(-40%);
+}
+
+.scroll-image:last-child {
+    bottom: 0;
+    transform: translateY(40%);
+}
+
+.scroll-text {
+    position: relative;
+    color: #4B0082;
+    font-size: 24px;
+    font-family: 'Funnel Display', sans-serif;
+    text-align: center;
+    margin: 20px 0;
+    white-space: nowrap;
+    z-index: 2;
 }
 
 .return-button {
-    position: absolute;
+    position: fixed;
     bottom: 20px;
     right: 20px;
-    transform: rotate(90deg);
     padding: 10px 20px;
     background: #4B0082;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 2;
+    z-index: 1000;
+    font-family: 'Funnel Display', sans-serif;
 }
