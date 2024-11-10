@@ -357,29 +357,11 @@ class PageManager {
             this.addChatMessage(message);
             input.value = '';
             
-            const response = {
-                artwork: this.recognizedArtwork.title,
-                artist: this.recognizedArtwork.artiste,
-                date: this.recognizedArtwork.date,
-                response: message,
-                timestamp: new Date().toISOString()
-            };
-
-            const responseText = `Œuvre: ${response.artwork}\nArtiste: ${response.artist}\nDate: ${response.date}\nRéponse: ${response.response}\nDate: ${response.timestamp}\n\n`;
-
-            const blob = new Blob([responseText], { type: 'text/plain' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'reponses.txt';
-            a.click();
-            window.URL.revokeObjectURL(url);
-            
             setTimeout(() => {
                 this.goToPage(7);
                 setTimeout(() => {
                     this.goToPage(9);
-                    document.querySelector('.new-response').textContent = message;
+                    document.querySelector('.response-text').textContent = message;
                 }, 3000);
             }, 1000);
         }

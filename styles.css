@@ -379,60 +379,39 @@ body {
     pointer-events: none;
 }
 
-/* Page 9 - Scrolling Wall */
-.scrolling-wall {
+/* Page 9 - Final Wall */
+.final-wall {
     position: relative;
     width: 100%;
     height: 100vh;
-    overflow: hidden;
-    background: #000000;
+    background: url('rsc/bg_last.jpg') no-repeat center center;
+    background-size: cover;
     display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.wall-image {
-    position: relative;
-    width: 100%;
-    height: calc((100vh - 50px) / 2); /* Divise l'espace en deux avec 50px de gap */
-    object-fit: cover;
-}
-
-.wall-image-top {
-    top: 0;
-}
-
-.wall-image-bottom {
-    bottom: 0;
-}
-
-.center-text {
-    height: 50px;
-    width: 100%;
-    display: flex;
-    align-items: center;
     justify-content: center;
-    color: #4B0082;
-    font-size: 24px;
-    font-family: 'Funnel Display', sans-serif;
-    padding: 0 20px;
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    align-items: center;
 }
 
-.return-button {
+.response-text {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Funnel Display', sans-serif;
+    font-size: 24px;
+    color: #4B0082;
+    max-width: 80%;
+    text-align: center;
+}
+
+.camera-return-btn {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    transform: rotate(90deg);
-    padding: 10px 20px;
-    background: #4B0082;
-    color: white;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 70px;
+    background-color: white;
+    border-radius: 50%;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
     z-index: 1000;
-    font-family: 'Funnel Display', sans-serif;
 }
