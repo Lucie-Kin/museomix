@@ -9,8 +9,7 @@ class PageManager {
         this.cameraStream = null;
         this.animationCount = 0;
         this.cameraInitialized = false;
-        this.torchTrack = null;
-        this.hasTorch = false;
+        this.torchEnabled = false;
         
         this.initializeEventListeners();
         this.preloadResources();
@@ -190,10 +189,16 @@ class PageManager {
 
     async requestCamera() {
         try {
+            // Stop any existing stream
+            if (this.cameraStream) {
+                this.stopCamera();
+            }
+
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
             const constraints = {
                 video: {
-                    facingMode: isMobile ? 'environment' : 'user'
+                    facingMode: isMobile ? 'environment' : 'user',
+                    advanced: [{ torch: true }]  // Request torch capability upfront
                 }
             };
 
@@ -201,30 +206,82 @@ class PageManager {
             this.cameraStream = stream;
             this.cameraInitialized = true;
             
-            // Get the video track and check torch capability
-            const videoTrack = stream.getVideoTracks()[0];
-            const capabilities = videoTrack.getCapabilities();
+            const track = stream.getVideoTracks()[0];
             
-            // Check and store torch capability
-            this.hasTorch = capabilities?.torch || false;
-            if (this.hasTorch) {
-                console.log('Torch is available on this device');
-                this.torchTrack = videoTrack;
-                // Try to turn on torch immediately if we're going to camera page
-                if (this.currentPage === 5) {
-                    await this.turnOnFlash();
+            // Explicitly check torch capability
+            const capabilities = track.getCapabilities();
+            const settings = track.getSettings();
+            
+            if (capabilities.torch) {
+                console.log('Torch is available');
+                // Try to enable torch immediately
+                try {
+                    await track.applyConstraints({ advanced: [{ torch: true }] });
+                    this.torchEnabled = true;
+                    console.log('Torch enabled successfully');
+                } catch (err) {
+                    console.error('Failed to enable torch:', err);
+                    // Try alternative method for some Android devices
+                    try {
+                        await track.applyConstraints({
+                            torch: true
+                        });
+                        this.torchEnabled = true;
+                        console.log('Torch enabled via alternative method');
+                    } catch (err2) {
+                        console.error('Alternative torch method failed:', err2);
+                    }
                 }
             } else {
-                console.log('Torch is not available on this device');
+                console.log('Torch not available on this device');
             }
 
             document.getElementById('cameraFeed').srcObject = stream;
             this.goToPage(4);
         } catch (error) {
-            console.error('Camera access denied:', error);
+            console.error('Camera access error:', error);
             document.querySelector('.camera-message').classList.add('hidden');
             document.querySelector('.camera-denied').classList.remove('hidden');
             this.goToPage(3);
+        }
+    }
+
+    async turnOnFlash() {
+        if (!this.cameraStream) return;
+        
+        try {
+            const track = this.cameraStream.getVideoTracks()[0];
+            if (!track) return;
+
+            // Try multiple methods to enable torch
+            try {
+                await track.applyConstraints({ advanced: [{ torch: true }] });
+                this.torchEnabled = true;
+            } catch (err) {
+                // Alternative method for some Android devices
+                try {
+                    await track.applyConstraints({ torch: true });
+                    this.torchEnabled = true;
+                } catch (err2) {
+                    console.error('All torch enabling methods failed:', err2);
+                }
+            }
+        } catch (err) {
+            console.error('Error turning on flash:', err);
+        }
+    }
+
+    async turnOffFlash() {
+        if (!this.cameraStream) return;
+        
+        try {
+            const track = this.cameraStream.getVideoTracks()[0];
+            if (!track) return;
+
+            await track.applyConstraints({ advanced: [{ torch: false }] });
+            this.torchEnabled = false;
+        } catch (err) {
+            console.error('Error turning off flash:', err);
         }
     }
 
@@ -234,17 +291,24 @@ class PageManager {
             return;
         }
 
-        // Handle flash based on page
+        // Handle torch based on page
         if (pageNumber === 5) {
-            setTimeout(() => this.turnOnFlash(), 500); // Delay torch activation slightly
-        } else {
+            // Ensure camera is initialized with torch on page 5
+            if (!this.cameraInitialized) {
+                this.requestCamera().then(() => {
+                    setTimeout(() => this.turnOnFlash(), 500);
+                });
+            } else {
+                setTimeout(() => this.turnOnFlash(), 500);
+            }
+        } else if (this.currentPage === 5) {
+            // Turn off torch when leaving camera page
             this.turnOffFlash();
+            if (pageNumber !== 5) {
+                this.stopCamera();
+            }
         }
 
-        if (this.currentPage === 5 && pageNumber !== 5) {
-            this.stopCamera();
-        }
-        
         this.pages.forEach(page => page.classList.remove('active'));
         document.getElementById(`page${pageNumber}`).classList.add('active');
         this.currentPage = pageNumber;
@@ -279,8 +343,8 @@ class PageManager {
                 track.stop();
             });
             this.cameraStream = null;
-            this.torchTrack = null;
-            this.hasTorch = false;
+            this.cameraInitialized = false;
+            this.torchEnabled = false;
         }
     }
 
@@ -335,8 +399,8 @@ class PageManager {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
     
-        this.addChatMessage("Hello visitor");
-        this.addChatMessage(`You've photographed ${this.recognizedArtwork.title}`);
+        this.addChatMessage("Salut visiteur");
+        this.addChatMessage(`Vous avez photographié ${this.recognizedArtwork.title}`);
         this.addChatMessage(this.recognizedArtwork.description);
         
         const thumbnailBubble = document.createElement('div');
@@ -354,7 +418,7 @@ class PageManager {
         
         messages.appendChild(thumbnailBubble);
     
-        this.addChatMessage("I've got a sharp eye, right?");
+        this.addChatMessage("J'ai un œil de linx, n'est-ce pas?");
         
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
@@ -376,7 +440,7 @@ class PageManager {
     handlePositiveResponse() {
         document.getElementById('yesBtn').style.display = 'none';
         document.getElementById('noBtn').style.display = 'none';
-        this.addChatMessage("Great! Let me ask you something about this artwork...");
+        this.addChatMessage("Super! Let me ask you something about this artwork...");
         document.getElementById('messageInput').disabled = false;
     }
 
