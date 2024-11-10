@@ -349,6 +349,8 @@ class PageManager {
         this.goToPage(5);
     }
 
+    // Ajouter ces fonctions après sendMessage() et avant la fin de la classe PageManager
+
     sendMessage() {
         const input = document.getElementById('messageInput');
         const message = input.value.trim();
@@ -362,10 +364,112 @@ class PageManager {
                 this.goToPage(7);
                 setTimeout(() => {
                     this.goToPage(9);
-                    document.querySelector('.response-text').textContent = message;
+                    this.initializeScrollingText();
                 }, 3000);
             }, 1000);
         }
+    }
+
+    initializeScrollingText() {
+        const container = document.querySelector('.scrolling-wall');
+        container.innerHTML = '';
+
+        const answers = [
+            "Du jardinage",
+            "Le monsieur pèche",
+            "Il randonne sur le Mont Chauve",
+            "Cette personne skie",
+            "Il saute à la perche",
+            "Le monsieur fait voler un cerf volant",
+            "Le souvenir douloureux de la guerre, le corps dans la boue",
+            "Une main abimé",
+            "Un corps qui se jette",
+            "Une superposition de marron",
+            "De la terre",
+            "Un oasis dans un désert coloré",
+            "Une doudoune",
+            "Un costume pour Halloween",
+            "Les oiseaux déplumées",
+            "Un oiseau rare",
+            "Une pallette de peinture",
+            "Un paysage impressioniste"
+        ];
+
+        const scrollingContent = document.createElement('div');
+        scrollingContent.className = 'scrolling-content';
+        container.appendChild(scrollingContent);
+
+        // Ajouter l'élément avec la réponse de l'utilisateur
+        const userLine = document.createElement('div');
+        userLine.className = 'content-line';
+        const userText = document.createElement('p');
+        userText.textContent = this.userResponse;
+        userText.className = 'scroll-text';
+        userLine.appendChild(userText);
+        scrollingContent.appendChild(userLine);
+
+        // Ajouter les réponses prédéfinies
+        answers.forEach(answer => {
+            const line = document.createElement('div');
+            line.className = 'content-line';
+            const text = document.createElement('p');
+            text.textContent = answer;
+            text.className = 'scroll-text';
+            line.appendChild(text);
+            scrollingContent.appendChild(line);
+        });
+
+        // Animation de défilement
+        let scrollPosition = 0;
+        const animate = () => {
+            scrollPosition -= 1;
+            scrollingContent.style.transform = `translateX(${scrollPosition}px)`;
+            
+            // Reset position when content is off screen
+            const contentWidth = scrollingContent.offsetWidth;
+            if (-scrollPosition > contentWidth / 2) {
+                scrollPosition = 0;
+            }
+            
+            requestAnimationFrame(animate);
+        };
+
+        animate();
+    }
+
+    initializeScrollingWall() {
+        this.initializeBrickWall();
+        const bricks = document.querySelectorAll('.scrolling .brick');
+        
+        bricks.forEach((brick, index) => {
+            const direction = index % 2 === 0 ? 1 : -1;
+            this.animateBrick(brick, direction);
+        });
+    }
+
+    animateBrick(brick, direction) {
+        const duration = 10000;
+        const start = brick.offsetLeft;
+        const distance = window.innerWidth;
+        let startTime = null;
+
+        const animate = (currentTime) => {
+            if (!startTime) startTime = currentTime;
+            const elapsed = currentTime - startTime;
+            const progress = elapsed / duration;
+
+            if (progress < 1) {
+                const position = start + (distance * progress * direction);
+                brick.style.left = `${position}px`;
+                requestAnimationFrame(animate);
+            } else {
+                brick.style.left = start + 'px';
+                startTime = null;
+                requestAnimationFrame(animate);
+            }
+        };
+
+        requestAnimationFrame(animate);
     }
 }
 
