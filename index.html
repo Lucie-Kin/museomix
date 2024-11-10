@@ -117,5 +117,24 @@
     </div>
 
     <script src="app.js"></script>
+    <script>
+    window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+            registration.addEventListener('updatefound', () => {
+                // New service worker is installing
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New version available - force reload
+                    window.location.reload();
+                }
+                });
+            });
+            });
+        }
+    });
+    </script>
 </body>
 </html>
