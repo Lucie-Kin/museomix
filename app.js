@@ -429,7 +429,7 @@ class PageManager {
         const artwork = artworks[Math.floor(Math.random() * artworks.length)];
         return artwork;
     }
-    
+    /*
     initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
@@ -451,6 +451,22 @@ class PageManager {
     
         this.addChatMessage("J'ai un œil de lynx, n'est-ce pas ?");
         
+        const chatButtons = document.querySelector('.chat-buttons');
+        chatButtons.style.display = 'flex';
+        document.getElementById('messageInput').disabled = true;
+        
+        document.getElementById('yesBtn').style.display = 'block';
+        document.getElementById('noBtn').style.display = 'block';
+    }*/
+    initializeChat() {
+        const messages = document.querySelector('.chat-messages');
+        messages.innerHTML = '';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'chat-bubble';
+        bubble.textContent = "Salut";
+        messages.appendChild(bubble);
+
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
         document.getElementById('messageInput').disabled = true;
