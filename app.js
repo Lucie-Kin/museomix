@@ -429,7 +429,7 @@ class PageManager {
         const artwork = artworks[Math.floor(Math.random() * artworks.length)];
         return artwork;
     }
-    /*
+    
     initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
@@ -457,8 +457,8 @@ class PageManager {
         
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
-    }*/
-    initializeChat() {
+    }
+    /*initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
 
@@ -473,7 +473,7 @@ class PageManager {
         
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
-    }
+    }*/
     
     handlePositiveResponse() {
         document.getElementById('yesBtn').style.display = 'none';
