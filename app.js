@@ -23,7 +23,7 @@ class PageManager {
             
             mainPath.addEventListener('animationiteration', () => {
                 this.animationCount++;
-                if (this.animationCount >= 4) {
+                if (this.animationCount >= 2) {
                     const allElements = svgDoc.querySelectorAll('*');
                     allElements.forEach(element => {
                         element.style.animation = 'none';

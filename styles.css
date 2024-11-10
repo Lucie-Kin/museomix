@@ -48,8 +48,8 @@ body {
 }
 
 .logo-container {
-    width: 35vh; /* Reduced from 45vh */
-    height: 35vh;
+    width: 25vh; /* Reduced from 45vh */
+    height: 25vh;
     position: relative;
 }
 
@@ -74,6 +74,7 @@ body {
     align-items: center;
     height: 100vh;
     padding: 20px;
+    transform: translateY(-20px); /* Move text up by 20px */
 }
 
 .text-container p {
@@ -102,6 +103,7 @@ body {
 
 .camera-container {
     text-align: center;
+    transform: translateY(-30px); /* Move camera permission up by 30px */
 }
 
 .camera-message {
