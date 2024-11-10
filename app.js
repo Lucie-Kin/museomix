@@ -7,12 +7,43 @@ class PageManager {
         this.minAnimationTime = 12000; // 3s animation * 4 repetitions
         this.animationStartTime = Date.now();
         this.cameraStream = null;
+        this.animationCount = 0;
         
         this.initializeEventListeners();
         this.preloadResources();
         this.monitorLogoAnimation();
+        this.setupLogoAnimationCounter();
     }
 
+    setupLogoAnimationCounter() {
+        const logo = document.getElementById('animated-logo');
+        logo.addEventListener('load', () => {
+            const svgDoc = logo.contentDocument;
+            const mainPath = svgDoc.getElementById('main-path');
+            
+            mainPath.addEventListener('animationiteration', () => {
+                this.animationCount++;
+                if (this.animationCount >= 4) {
+                    // Stop animations by removing them
+                    const allElements = svgDoc.querySelectorAll('*');
+                    allElements.forEach(element => {
+                        element.style.animation = 'none';
+                    });
+                    
+                    // Fade out the logo
+                    const logoContainer = document.querySelector('.logo-container');
+                    logoContainer.style.transition = 'opacity 0.5s';
+                    logoContainer.style.opacity = '0';
+                    
+                    // Proceed to next page
+                    setTimeout(() => {
+                        this.goToPage(2);
+                        this.setupPage2Animation();
+                    }, 500);
+                }
+            });
+        });
+    }
     initializeEventListeners() {
         // Camera permission buttons
         document.getElementById('cameraPermissionBtn').addEventListener('click', () => this.requestCamera());

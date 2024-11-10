@@ -8,12 +8,12 @@
  stroke-width: 2;
  stroke-dasharray: 150.32;
  stroke-dashoffset: 150.32;
- animation: drawPath 3s ease 4;
+ animation: drawPath 3s ease infinite;
  }
  #logo-dot {
  fill: white;
  opacity: 0;
- animation: showDot 3s ease 4, switchColor 3s step-end 4;
+ animation: showDot 3s ease infinite, switchColor 3s step-end infinite;
  }
  @keyframes drawPath {
  0% {
