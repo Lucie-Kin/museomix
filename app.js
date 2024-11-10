@@ -10,6 +10,7 @@ class PageManager {
         this.animationCount = 0;
         this.cameraInitialized = false;
         this.torchTrack = null;
+        this.hasTorch = false;
         
         this.initializeEventListeners();
         this.preloadResources();
@@ -42,30 +43,6 @@ class PageManager {
                 }
             });
         });
-    }
-
-    async turnOnFlash() {
-        if (this.torchTrack) {
-            try {
-                await this.torchTrack.applyConstraints({
-                    advanced: [{ torch: true }]
-                });
-            } catch (err) {
-                console.log('Flash not available:', err);
-            }
-        }
-    }
-
-    async turnOffFlash() {
-        if (this.torchTrack) {
-            try {
-                await this.torchTrack.applyConstraints({
-                    advanced: [{ torch: false }]
-                });
-            } catch (err) {
-                console.log('Error turning off flash:', err);
-            }
-        }
     }
 
     initializeEventListeners() {
@@ -164,6 +141,53 @@ class PageManager {
         }
     }
 
+    async turnOnFlash() {
+        try {
+            if (!this.cameraStream) return;
+            
+            const track = this.cameraStream.getVideoTracks()[0];
+            if (!track) return;
+
+            // Check if torch is supported
+            const capabilities = track.getCapabilities();
+            if (!capabilities.torch) {
+                console.log('Torch not supported on this device');
+                return;
+            }
+
+            // Try to turn on the torch
+            await track.applyConstraints({
+                advanced: [{ torch: true }]
+            });
+            
+            console.log('Torch turned on successfully');
+        } catch (err) {
+            console.error('Error turning on flash:', err);
+        }
+    }
+
+    async turnOffFlash() {
+        try {
+            if (!this.cameraStream) return;
+            
+            const track = this.cameraStream.getVideoTracks()[0];
+            if (!track) return;
+
+            // Check if torch is supported
+            const capabilities = track.getCapabilities();
+            if (!capabilities.torch) return;
+
+            // Try to turn off the torch
+            await track.applyConstraints({
+                advanced: [{ torch: false }]
+            });
+            
+            console.log('Torch turned off successfully');
+        } catch (err) {
+            console.error('Error turning off flash:', err);
+        }
+    }
+
     async requestCamera() {
         try {
             const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
@@ -177,14 +201,21 @@ class PageManager {
             this.cameraStream = stream;
             this.cameraInitialized = true;
             
-            // Get the video track and store it for torch control
+            // Get the video track and check torch capability
             const videoTrack = stream.getVideoTracks()[0];
             const capabilities = videoTrack.getCapabilities();
             
-            // Check if torch is available
-            if (capabilities.torch) {
+            // Check and store torch capability
+            this.hasTorch = capabilities?.torch || false;
+            if (this.hasTorch) {
+                console.log('Torch is available on this device');
                 this.torchTrack = videoTrack;
-                await this.turnOnFlash();
+                // Try to turn on torch immediately if we're going to camera page
+                if (this.currentPage === 5) {
+                    await this.turnOnFlash();
+                }
+            } else {
+                console.log('Torch is not available on this device');
             }
 
             document.getElementById('cameraFeed').srcObject = stream;
@@ -205,7 +236,7 @@ class PageManager {
 
         // Handle flash based on page
         if (pageNumber === 5) {
-            this.turnOnFlash();
+            setTimeout(() => this.turnOnFlash(), 500); // Delay torch activation slightly
         } else {
             this.turnOffFlash();
         }
@@ -254,7 +285,7 @@ class PageManager {
     initializeCamera() {
         if (this.cameraStream) {
             document.getElementById('cameraFeed').srcObject = this.cameraStream;
-            this.turnOnFlash();
+            setTimeout(() => this.turnOnFlash(), 500); // Delay torch activation
         } else {
             this.requestCamera();
         }
@@ -263,9 +294,12 @@ class PageManager {
     stopCamera() {
         this.turnOffFlash();
         if (this.cameraStream) {
-            this.cameraStream.getTracks().forEach(track => track.stop());
+            this.cameraStream.getTracks().forEach(track => {
+                track.stop();
+            });
             this.cameraStream = null;
             this.torchTrack = null;
+            this.hasTorch = false;
         }
     }
 
