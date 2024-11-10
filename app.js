@@ -14,9 +14,12 @@ class PageManager {
     }
 
     preloadResources() {
-        // Pages and resources to preload
+        // Add your resource URLs here
         const resources = [
-            // Add your resource URLs here
+            'rsc/logo.png',
+            'rsc/ciac_logo-01.png',
+            'rsc/ciac_logo-02.png',
+            // Add other resources as needed
         ];
 
         let loadedCount = 0;
@@ -42,25 +45,19 @@ class PageManager {
     }
 
     monitorLogoAnimation() {
-        // Monitor logo drawing animation
-        const logoPath = document.querySelector('#logo-path');
-        let animationCount = 0;
-        
-        logoPath.addEventListener('animationiteration', () => {
-            animationCount++;
+        // Monitor logo animation completion
+        setTimeout(() => {
             this.checkTransition();
-        });
+        }, this.minAnimationTime);
     }
 
     checkTransition() {
         const currentTime = Date.now();
         const elapsedTime = currentTime - this.animationStartTime;
         
-        // Only transition if both conditions are met:
-        // 1. Minimum animation time has passed
-        // 2. Resources are preloaded
         if (elapsedTime >= this.minAnimationTime && this.preloadDone) {
             this.goToPage(2);
+            this.setupPage2Animation();
         }
     }
 
@@ -68,16 +65,41 @@ class PageManager {
         this.pages.forEach(page => page.classList.remove('active'));
         document.getElementById(`page${pageNumber}`).classList.add('active');
         this.currentPage = pageNumber;
-
-        if (pageNumber === 2) {
-            this.animateTextLines();
-        }
     }
 
-    // Rest of your existing PageManager methods remain the same
+    setupPage2Animation() {
+        if (this.currentPage === 2) {
+            const textLines = document.querySelectorAll('#page2 p');
+            setTimeout(() => {
+                textLines.forEach((line, index) => {
+                    if (index % 2 === 0) {
+                        line.classList.add('slide-left');
+                    } else {
+                        line.classList.add('slide-right');
+                    }
+                });
+                
+                // Transition to page 3 after animation
+                setTimeout(() => {
+                    this.goToPage(3);
+                }, 500);
+            }, 10000); // Wait 10 seconds before sliding
+        }
+    }
 }
 
 // Initialize the page manager
 const pageManager = new PageManager();
 
-// Your existing service worker registration remains the same
+// Service Worker Registration
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(registration => {
+                console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+                console.log('ServiceWorker registration failed: ', err);
+            });
+    });
+}

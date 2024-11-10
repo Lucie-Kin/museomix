@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
     <title>Museum Interactive Guide</title>
     <link rel="manifest" href="manifest.json">
@@ -22,7 +22,28 @@
         </div>
     </div>
 
-    <!-- Rest of your pages -->
+    <div id="page2" class="page">
+        <!-- Text content page -->
+        <div class="text-container">
+            <p>Vous allez être</p>
+            <p>amener</p>
+            <p>a photographier</p>
+            <p>des oeuvres</p>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <!-- Camera access page -->
+        <div class="camera-container">
+            <div class="camera-message">
+                <p>Camera access required</p>
+                <button id="cameraPermissionBtn">Allow Camera Access</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add other pages as needed -->
+
     <script src="app.js"></script>
 </body>
 </html>
