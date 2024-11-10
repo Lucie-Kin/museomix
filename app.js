@@ -15,6 +15,7 @@ class PageManager {
         this.preloadResources();
         this.monitorLogoAnimation();
         this.setupLogoAnimationCounter();
+        this.userResponse = '';
     }
 
     setupLogoAnimationCounter() {
@@ -589,6 +590,7 @@ class PageManager {
         const message = input.value.trim();
         
         if (message) {
+            this.userResponse = message;
             this.addChatMessage(message);
             input.value = '';
             
@@ -596,9 +598,80 @@ class PageManager {
                 this.goToPage(7);
                 setTimeout(() => {
                     this.goToPage(8);
+                    this.initializeScrollingText();
                 }, 3000);
             }, 1000);
         }
+    }
+
+    initializeScrollingText() {
+        const container = document.querySelector('.scrolling-wall');
+        container.innerHTML = '';
+
+        // Créer le conteneur de défilement
+        const scrollingContent = document.createElement('div');
+        scrollingContent.className = 'scrolling-content';
+        container.appendChild(scrollingContent);
+
+        // Fonction pour créer une ligne de contenu
+        const createContentLine = () => {
+            const line = document.createElement('div');
+            line.className = 'content-line';
+            
+            const topImage = document.createElement('img');
+            topImage.src = 'rsc/bg01.jpg';
+            topImage.className = 'scroll-image';
+            
+            const text = document.createElement('p');
+            text.textContent = this.userResponse;
+            text.className = 'scroll-text';
+            
+            const bottomImage = document.createElement('img');
+            bottomImage.src = 'rsc/bg02.jpg';
+            bottomImage.className = 'scroll-image';
+            
+            line.appendChild(topImage);
+            line.appendChild(text);
+            line.appendChild(bottomImage);
+            
+            return line;
+        };
+
+        // Ajouter plusieurs lignes pour assurer le défilement continu
+        for (let i = 0; i < 10; i++) {
+            scrollingContent.appendChild(createContentLine());
+        }
+
+        // Fonction pour vérifier et ajouter des lignes si nécessaire
+        const checkAndAddLines = () => {
+            const contentRect = scrollingContent.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            if (contentRect.right - containerRect.left < containerRect.width * 2) {
+                scrollingContent.appendChild(createContentLine());
+            }
+
+            // Supprimer les lignes qui sont complètement sorties de l'écran
+            const lines = scrollingContent.children;
+            for (let i = 0; i < lines.length; i++) {
+                const lineRect = lines[i].getBoundingClientRect();
+                if (lineRect.right < containerRect.left) {
+                    scrollingContent.removeChild(lines[i]);
+                    scrollingContent.appendChild(createContentLine());
+                }
+            }
+        };
+
+        // Animation de défilement
+        let scrollPosition = 0;
+        const animate = () => {
+            scrollPosition -= 1;
+            scrollingContent.style.transform = `translateX(${scrollPosition}px)`;
+            checkAndAddLines();
+            requestAnimationFrame(animate);
+        };
+
+        animate();
     }
 
     initializeScrollingWall() {
