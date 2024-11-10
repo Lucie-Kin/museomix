@@ -277,8 +277,8 @@ body {
 }
 
 #sendMessage img {
-    width: 12px; /* Adjusted for smaller button */
-    height: 12px;
+    width: 6px; /* Adjusted for smaller button */
+    height: 6px;
 }
 
 .chat-buttons {
