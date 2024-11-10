@@ -23,7 +23,6 @@
     </div>
 
     <div id="page2" class="page">
-        <!-- Text content page -->
         <div class="text-container">
             <p>Vous allez être</p>
             <p>amener</p>
@@ -33,16 +32,87 @@
     </div>
 
     <div id="page3" class="page">
-        <!-- Camera access page -->
         <div class="camera-container">
             <div class="camera-message">
                 <p>Camera access required</p>
                 <button id="cameraPermissionBtn">Allow Camera Access</button>
             </div>
+            <div class="camera-denied hidden">
+                <p>You cannot continue without camera access</p>
+                <button id="retryPermissionBtn">Try Again</button>
+            </div>
         </div>
     </div>
 
-    <!-- Add other pages as needed -->
+    <div id="page4" class="page">
+        <div class="brick-wall">
+            <div class="brick-container"></div>
+        </div>
+        <div class="center-content">
+            <img src="rsc/logo.png" alt="CIAC Logo" class="centered-logo">
+            <div class="text-area">
+                <button id="converseCIAC">Converse with CIAC</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page5" class="page">
+        <div class="camera-view">
+            <div class="camera-overlay">Find an artwork</div>
+            <video id="cameraFeed" autoplay playsinline></video>
+            <canvas id="photoCanvas" class="hidden"></canvas>
+            <div class="camera-controls">
+                <button id="captureBtn">Take Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page6" class="page">
+        <div class="chat-interface">
+            <div class="chat-header">
+                <img src="rsc/ciac_logo-01.png" alt="CIAC Logo" class="chat-logo">
+                <span class="chat-title">le musée te parle</span>
+                <div class="chat-icons">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+            <div class="chat-messages">
+                <!-- Messages will be inserted here by JavaScript -->
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Type your message..." disabled>
+                <button id="sendMessage">
+                    <img src="rsc/send_btn.png" alt="Send">
+                </button>
+            </div>
+            <div class="chat-buttons">
+                <button id="yesBtn" class="response-btn">Yes, impressive</button>
+                <button id="noBtn" class="response-btn">Not at all</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page7" class="page">
+        <div class="response-message">
+            Adding to the response wall
+        </div>
+    </div>
+
+    <div id="page8" class="page">
+        <div class="instruction-overlay">
+            <p>Tap on the texts</p>
+        </div>
+        <div class="static-wall"></div>
+    </div>
+
+    <div id="page9" class="page">
+        <div class="scrolling-wall">
+            <div class="brick-container scrolling"></div>
+        </div>
+        <button id="returnCamera" class="return-button">Return to Camera</button>
+    </div>
 
     <script src="app.js"></script>
 </body>
