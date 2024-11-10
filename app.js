@@ -299,7 +299,7 @@ class PageManager {
     initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
-
+    
         this.addChatMessage("Hello visitor");
         this.addChatMessage(`You've photographed ${this.recognizedArtwork.title}`);
         this.addChatMessage(this.recognizedArtwork.description);
@@ -318,9 +318,17 @@ class PageManager {
         thumbnailBubble.appendChild(keywordsPara);
         
         messages.appendChild(thumbnailBubble);
-
+    
         this.addChatMessage("I've got a sharp eye, right?");
-        document.querySelector('.chat-buttons').style.display = 'flex';
+        
+        // Reset buttons state
+        const chatButtons = document.querySelector('.chat-buttons');
+        chatButtons.style.display = 'flex';
+        document.getElementById('messageInput').disabled = true;
+        
+        // Ensure buttons are visible and enabled
+        document.getElementById('yesBtn').style.display = 'block';
+        document.getElementById('noBtn').style.display = 'block';
     }
 
     addChatMessage(text) {
@@ -333,7 +341,9 @@ class PageManager {
     }
 
     handlePositiveResponse() {
-        document.querySelector('.chat-buttons').style.display = 'none';
+        // Don't hide the entire chat-buttons container, just the buttons
+        document.getElementById('yesBtn').style.display = 'none';
+        document.getElementById('noBtn').style.display = 'none';
         this.addChatMessage("Great! Let me ask you something about this artwork...");
         document.getElementById('messageInput').disabled = false;
     }
