@@ -1,4 +1,3 @@
-// Complete project code with all required functionality
 class PageManager {
     constructor() {
         this.currentPage = 1;
@@ -74,7 +73,8 @@ class PageManager {
             'rsc/send_btn.png',
             'rsc/art1.jpg',
             'rsc/art2.jpg',
-            'rsc/art3.jpg'
+            'rsc/art3.jpg',
+            'rsc/bg_last.jpg'
         ];
 
         let loadedCount = 0;
@@ -140,27 +140,19 @@ class PageManager {
             }, 3000);
         }
     }
-
     async turnOnFlash() {
         try {
             if (!this.cameraStream) return;
-            
             const track = this.cameraStream.getVideoTracks()[0];
             if (!track) return;
-
-            // Check if torch is supported
             const capabilities = track.getCapabilities();
             if (!capabilities.torch) {
                 console.log('Torch not supported on this device');
                 return;
             }
-
-            // Try to turn on the torch
             await track.applyConstraints({
                 advanced: [{ torch: true }]
             });
-            
-            console.log('Torch turned on successfully');
         } catch (err) {
             console.error('Error turning on flash:', err);
         }
@@ -169,20 +161,10 @@ class PageManager {
     async turnOffFlash() {
         try {
             if (!this.cameraStream) return;
-            
             const track = this.cameraStream.getVideoTracks()[0];
             if (!track) return;
-
-            // Check if torch is supported
-            const capabilities = track.getCapabilities();
-            if (!capabilities.torch) return;
-
-            // Try to turn off the torch
-            await track.applyConstraints({
-                advanced: [{ torch: false }]
-            });
-            
-            console.log('Torch turned off successfully');
+            await track.applyConstraints({ advanced: [{ torch: false }] });
+            this.torchEnabled = false;
         } catch (err) {
             console.error('Error turning off flash:', err);
         }
@@ -190,7 +172,6 @@ class PageManager {
 
     async requestCamera() {
         try {
-            // Stop any existing stream
             if (this.cameraStream) {
                 this.stopCamera();
             }
@@ -199,44 +180,13 @@ class PageManager {
             const constraints = {
                 video: {
                     facingMode: isMobile ? 'environment' : 'user',
-                    advanced: [{ torch: true }]  // Request torch capability upfront
+                    advanced: [{ torch: true }]
                 }
             };
 
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
             this.cameraStream = stream;
             this.cameraInitialized = true;
-            
-            const track = stream.getVideoTracks()[0];
-            
-            // Explicitly check torch capability
-            const capabilities = track.getCapabilities();
-            const settings = track.getSettings();
-            
-            if (capabilities.torch) {
-                console.log('Torch is available');
-                // Try to enable torch immediately
-                try {
-                    await track.applyConstraints({ advanced: [{ torch: true }] });
-                    this.torchEnabled = true;
-                    console.log('Torch enabled successfully');
-                } catch (err) {
-                    console.error('Failed to enable torch:', err);
-                    // Try alternative method for some Android devices
-                    try {
-                        await track.applyConstraints({
-                            torch: true
-                        });
-                        this.torchEnabled = true;
-                        console.log('Torch enabled via alternative method');
-                    } catch (err2) {
-                        console.error('Alternative torch method failed:', err2);
-                    }
-                }
-            } else {
-                console.log('Torch not available on this device');
-            }
-
             document.getElementById('cameraFeed').srcObject = stream;
             this.goToPage(4);
         } catch (error) {
@@ -247,54 +197,12 @@ class PageManager {
         }
     }
 
-    async turnOnFlash() {
-        if (!this.cameraStream) return;
-        
-        try {
-            const track = this.cameraStream.getVideoTracks()[0];
-            if (!track) return;
-
-            // Try multiple methods to enable torch
-            try {
-                await track.applyConstraints({ advanced: [{ torch: true }] });
-                this.torchEnabled = true;
-            } catch (err) {
-                // Alternative method for some Android devices
-                try {
-                    await track.applyConstraints({ torch: true });
-                    this.torchEnabled = true;
-                } catch (err2) {
-                    console.error('All torch enabling methods failed:', err2);
-                }
-            }
-        } catch (err) {
-            console.error('Error turning on flash:', err);
-        }
-    }
-
-    async turnOffFlash() {
-        if (!this.cameraStream) return;
-        
-        try {
-            const track = this.cameraStream.getVideoTracks()[0];
-            if (!track) return;
-
-            await track.applyConstraints({ advanced: [{ torch: false }] });
-            this.torchEnabled = false;
-        } catch (err) {
-            console.error('Error turning off flash:', err);
-        }
-    }
-
     goToPage(pageNumber) {
-        // Don't allow going back to animation pages
         if (pageNumber <= 2 && this.currentPage > 2) {
             return;
         }
 
-        // Handle torch based on page
         if (pageNumber === 5) {
-            // Ensure camera is initialized with torch on page 5
             if (!this.cameraInitialized) {
                 this.requestCamera().then(() => {
                     setTimeout(() => this.turnOnFlash(), 500);
@@ -303,7 +211,6 @@ class PageManager {
                 setTimeout(() => this.turnOnFlash(), 500);
             }
         } else if (this.currentPage === 5) {
-            // Turn off torch when leaving camera page
             this.turnOffFlash();
             if (pageNumber !== 5) {
                 this.stopCamera();
@@ -314,36 +221,15 @@ class PageManager {
         document.getElementById(`page${pageNumber}`).classList.add('active');
         this.currentPage = pageNumber;
 
-        if (pageNumber === 8) {
-            const overlay = document.querySelector('.instruction-overlay');
-            
-            overlay.addEventListener('click', () => {
-                overlay.classList.add('hidden');
-            }, { once: true });
-            
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-            }, 3000);
-        }
-
-        if (pageNumber === 4) {
-            this.initializeBrickWall();
-        } else if (pageNumber === 5) {
+        if (pageNumber === 5) {
             this.initializeCamera();
-        } else if (pageNumber === 9) {
-            this.initializeScrollingWall();
         }
-    }
-
-    initializeBrickWall() {
-        // Nothing to do here anymore as we're using a background image
-        return;
     }
 
     initializeCamera() {
         if (this.cameraStream) {
             document.getElementById('cameraFeed').srcObject = this.cameraStream;
-            setTimeout(() => this.turnOnFlash(), 500); // Delay torch activation
+            setTimeout(() => this.turnOnFlash(), 500);
         } else {
             this.requestCamera();
         }
@@ -352,9 +238,7 @@ class PageManager {
     stopCamera() {
         this.turnOffFlash();
         if (this.cameraStream) {
-            this.cameraStream.getTracks().forEach(track => {
-                track.stop();
-            });
+            this.cameraStream.getTracks().forEach(track => track.stop());
             this.cameraStream = null;
             this.cameraInitialized = false;
             this.torchEnabled = false;
@@ -390,21 +274,7 @@ class PageManager {
                 provenance: "Collection du CIAC",
                 picto: "SI CONCERNEE",
                 image: "rsc/art1.jpg",
-                characteristics: {
-                    format: "A4",
-                    mainColor: "blanc",
-                    elements: ["dessin noir", "fond blanc", "traits simples"],
-                    shape: "dessin minimaliste"
-                },
-                question: "Imaginons ce que fait cette personne...",
-                possibleAnswers: [
-                    "Du jardinage",
-                    "Le monsieur pêche",
-                    "Il randonne sur le Mont Chauve",
-                    "Cette personne skie",
-                    "Il saute à la perche",
-                    "Le monsieur fait voler un cerf-volant"
-                ]
+                question: "Imaginons ce que fait cette personne..."
             },
             {
                 id: 2,
@@ -414,21 +284,7 @@ class PageManager {
                 provenance: "Collection du CIAC Prêt",
                 picto: "OBSERVER",
                 image: "rsc/art2.jpg",
-                characteristics: {
-                    format: "carré",
-                    mainColor: "brun",
-                    elements: ["carré brun", "fond blanchâtre", "cadre bois clair"],
-                    shape: "forme géométrique"
-                },
-                question: "Que voyez-vous ? Que se passe-t-il ?",
-                possibleAnswers: [
-                    "Du jardinage",
-                    "Le monsieur pêche",
-                    "Il randonne sur le Mont Chauve",
-                    "Cette personne skie",
-                    "Il saute à la perche",
-                    "Le monsieur fait voler un cerf-volant"
-                ]
+                question: "Que voyez-vous ? Que se passe-t-il ?"
             },
             {
                 id: 3,
@@ -438,106 +294,12 @@ class PageManager {
                 provenance: "Prêt",
                 picto: "Explorer",
                 image: "rsc/art3.jpg",
-                characteristics: {
-                    format: "triangulaire",
-                    mainColor: "coloré",
-                    elements: ["aile", "plumes colorées", "forme triangulaire"],
-                    shape: "aile triangulaire"
-                },
-                question: "Regardons un instant la variété des couleurs des plumes. Que nous évoque cette œuvre ?",
-                possibleAnswers: [
-                    "Un oasis dans un désert coloré",
-                    "Une doudoune",
-                    "Un costume pour Halloween",
-                    "Les oiseaux déplumés",
-                    "Un oiseau rare",
-                    "Une palette de peinture",
-                    "Un paysage impressionniste"
-                ]
+                question: "Regardons un instant la variété des couleurs des plumes. Que nous évoque cette œuvre ?"
             }
         ];
-    
-        // Simuler une analyse basique de l'image capturée
-        const context = canvas.getContext('2d');
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imageData.data;
-        
-        // Analyser les caractéristiques de l'image
-        let whitePixels = 0;
-        let coloredPixels = 0;
-        let darkPixels = 0;
-        let brownPixels = 0;
-    
-        for (let i = 0; i < data.length; i += 4) {
-            const r = data[i];
-            const g = data[i + 1];
-            const b = data[i + 2];
-            
-            // Détecter les pixels blancs (valeurs RGB élevées)
-            if (r > 200 && g > 200 && b > 200) {
-                whitePixels++;
-            }
-            // Détecter les pixels colorés
-            else if (Math.max(r, g, b) > 150 && Math.abs(r - g) > 50 || Math.abs(r - b) > 50 || Math.abs(g - b) > 50) {
-                coloredPixels++;
-            }
-            // Détecter les pixels sombres
-            else if (r < 50 && g < 50 && b < 50) {
-                darkPixels++;
-            }
-            // Détecter les pixels bruns
-            else if (r > g && r > b && g > b && r - b > 50) {
-                brownPixels++;
-            }
-        }
-    
-        const totalPixels = data.length / 4;
-        const whiteRatio = whitePixels / totalPixels;
-        const coloredRatio = coloredPixels / totalPixels;
-        const darkRatio = darkPixels / totalPixels;
-        const brownRatio = brownPixels / totalPixels;
-    
-        // Déterminer l'œuvre la plus probable
-        if (whiteRatio > 0.7 && darkRatio > 0.1) {
-            return artworks[0]; // Art1: fond blanc avec dessin noir
-        } else if (brownRatio > 0.3 && whiteRatio > 0.3) {
-            return artworks[1]; // Art2: carré brun sur fond blanc
-        } else if (coloredRatio > 0.3) {
-            return artworks[2]; // Art3: aile colorée
-        }
-    
-        // Si aucune correspondance claire n'est trouvée, retourner une œuvre au hasard
         return artworks[Math.floor(Math.random() * artworks.length)];
     }
-    /*
-    initializeChat() {
-        const messages = document.querySelector('.chat-messages');
-        messages.innerHTML = '';
-    
-        this.addChatMessage("Bonjour visiteur");
-        this.addChatMessage(`Vous avez photographié "${this.recognizedArtwork.title}"`);
-        this.addChatMessage(`Une œuvre de ${this.recognizedArtwork.artiste} (${this.recognizedArtwork.date})`);
-        this.addChatMessage(`${this.recognizedArtwork.provenance}`);
-        
-        const thumbnailBubble = document.createElement('div');
-        thumbnailBubble.className = 'chat-bubble';
-        const thumbnail = document.createElement('img');
-        thumbnail.src = this.recognizedArtwork.image;
-        thumbnail.style.width = '25px';
-        thumbnail.style.height = '40px';
-        thumbnailBubble.appendChild(thumbnail);
-        
-        messages.appendChild(thumbnailBubble);
-    
-        this.addChatMessage("J'ai un œil de lynx, n'est-ce pas ?");
-        
-        const chatButtons = document.querySelector('.chat-buttons');
-        chatButtons.style.display = 'flex';
-        document.getElementById('messageInput').disabled = true;
-        
-        document.getElementById('yesBtn').style.display = 'block';
-        document.getElementById('noBtn').style.display = 'block';
-    }*/
+
     addChatMessage(text) {
         const messages = document.querySelector('.chat-messages');
         const bubble = document.createElement('div');
@@ -551,19 +313,11 @@ class PageManager {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
 
-        // Premier message
         this.addChatMessage("Salut");
-
-        // Ajout du titre
         this.addChatMessage(`Vous avez photographié "${this.recognizedArtwork.title}"`);
-
-        // Ajout de l'artiste et la date
         this.addChatMessage(`Une œuvre de ${this.recognizedArtwork.artiste} (${this.recognizedArtwork.date})`);
-
-        // Ajout de la provenance
         this.addChatMessage(`${this.recognizedArtwork.provenance}`);
 
-        // Ajout de l'image miniature
         const thumbnailBubble = document.createElement('div');
         thumbnailBubble.className = 'chat-bubble';
         const thumbnail = document.createElement('img');
@@ -573,14 +327,11 @@ class PageManager {
         thumbnailBubble.appendChild(thumbnail);
         messages.appendChild(thumbnailBubble);
 
-        // Question finale
         this.addChatMessage("J'ai un œil de lynx, n'est-ce pas ?");
 
-        // Activation des boutons
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
         document.getElementById('messageInput').disabled = true;
-        
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
     }
@@ -606,119 +357,32 @@ class PageManager {
             this.addChatMessage(message);
             input.value = '';
             
+            const response = {
+                artwork: this.recognizedArtwork.title,
+                artist: this.recognizedArtwork.artiste,
+                date: this.recognizedArtwork.date,
+                response: message,
+                timestamp: new Date().toISOString()
+            };
+
+            const responseText = `Œuvre: ${response.artwork}\nArtiste: ${response.artist}\nDate: ${response.date}\nRéponse: ${response.response}\nDate: ${response.timestamp}\n\n`;
+
+            const blob = new Blob([responseText], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'reponses.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
             setTimeout(() => {
                 this.goToPage(7);
                 setTimeout(() => {
-                    this.goToPage(8);
-                    this.initializeScrollingText();
+                    this.goToPage(9);
+                    document.querySelector('.new-response').textContent = message;
                 }, 3000);
             }, 1000);
         }
-    }
-
-    initializeScrollingText() {
-        const container = document.querySelector('.scrolling-wall');
-        container.innerHTML = '';
-
-        // Créer le conteneur de défilement
-        const scrollingContent = document.createElement('div');
-        scrollingContent.className = 'scrolling-content';
-        container.appendChild(scrollingContent);
-
-        // Fonction pour créer une ligne de contenu
-        const createContentLine = () => {
-            const line = document.createElement('div');
-            line.className = 'content-line';
-            
-            const topImage = document.createElement('img');
-            topImage.src = 'rsc/bg01.jpg';
-            topImage.className = 'scroll-image';
-            
-            const text = document.createElement('p');
-            text.textContent = this.userResponse;
-            text.className = 'scroll-text';
-            
-            const bottomImage = document.createElement('img');
-            bottomImage.src = 'rsc/bg02.jpg';
-            bottomImage.className = 'scroll-image';
-            
-            line.appendChild(topImage);
-            line.appendChild(text);
-            line.appendChild(bottomImage);
-            
-            return line;
-        };
-
-        // Ajouter plusieurs lignes pour assurer le défilement continu
-        for (let i = 0; i < 10; i++) {
-            scrollingContent.appendChild(createContentLine());
-        }
-
-        // Fonction pour vérifier et ajouter des lignes si nécessaire
-        const checkAndAddLines = () => {
-            const contentRect = scrollingContent.getBoundingClientRect();
-            const containerRect = container.getBoundingClientRect();
-            
-            if (contentRect.right - containerRect.left < containerRect.width * 2) {
-                scrollingContent.appendChild(createContentLine());
-            }
-
-            // Supprimer les lignes qui sont complètement sorties de l'écran
-            const lines = scrollingContent.children;
-            for (let i = 0; i < lines.length; i++) {
-                const lineRect = lines[i].getBoundingClientRect();
-                if (lineRect.right < containerRect.left) {
-                    scrollingContent.removeChild(lines[i]);
-                    scrollingContent.appendChild(createContentLine());
-                }
-            }
-        };
-
-        // Animation de défilement
-        let scrollPosition = 0;
-        const animate = () => {
-            scrollPosition -= 1;
-            scrollingContent.style.transform = `translateX(${scrollPosition}px)`;
-            checkAndAddLines();
-            requestAnimationFrame(animate);
-        };
-
-        animate();
-    }
-
-    initializeScrollingWall() {
-        this.initializeBrickWall();
-        const bricks = document.querySelectorAll('.scrolling .brick');
-        
-        bricks.forEach((brick, index) => {
-            const direction = index % 2 === 0 ? 1 : -1;
-            this.animateBrick(brick, direction);
-        });
-    }
-
-    animateBrick(brick, direction) {
-        const duration = 10000;
-        const start = brick.offsetLeft;
-        const distance = window.innerWidth;
-        let startTime = null;
-
-        const animate = (currentTime) => {
-            if (!startTime) startTime = currentTime;
-            const elapsed = currentTime - startTime;
-            const progress = elapsed / duration;
-
-            if (progress < 1) {
-                const position = start + (distance * progress * direction);
-                brick.style.left = `${position}px`;
-                requestAnimationFrame(animate);
-            } else {
-                brick.style.left = start + 'px';
-                startTime = null;
-                requestAnimationFrame(animate);
-            }
-        };
-
-        requestAnimationFrame(animate);
     }
 }
 
