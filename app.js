@@ -259,27 +259,8 @@ class PageManager {
     }
 
     initializeBrickWall() {
-        const container = document.querySelector('.brick-container');
-        container.innerHTML = '';
-        
-        const texts = [
-            "Lorem ipsum dolor sit amet",
-            "Consectetur adipiscing elit",
-            "Sed do eiusmod tempor",
-            "Incididunt ut labore",
-            "Et dolore magna aliqua"
-        ];
-
-        for (let i = 0; i < 15; i++) {
-            const brick = document.createElement('div');
-            brick.className = 'brick';
-            brick.textContent = texts[i % texts.length];
-            brick.style.top = `${(i * 60)}px`;
-            brick.style.left = i % 2 === 0 ? '0' : '50%';
-            brick.style.width = '50%';
-            brick.style.opacity = 1 - (i * 0.1);
-            container.appendChild(brick);
-        }
+        // Nothing to do here anymore as we're using a background image
+        return;
     }
 
     initializeCamera() {

@@ -121,30 +121,14 @@ body {
 
 /* Page 4 - Brick Wall */
 .brick-wall {
-    position: absolute;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
+    background: url('rsc/bg_bric.jpg') no-repeat center center;
+    background-size: cover;
 }
-
-.brick-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-}
-
-.brick {
-    position: absolute;
-    border: 3px solid black;
-    background: white;
-    padding: 10px;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-    overflow: hidden;
-    height: 50px;
-    line-height: 30px;
-}
-
 
 .center-content {
     position: relative;
@@ -154,13 +138,12 @@ body {
     align-items: center;
     justify-content: center;
     height: 100%;
-    transform: translate(10px, -20px); /* Added 10px to the right */
 }
 
 .centered-logo {
     width: 200px;
     margin-bottom: 40px;
-    transform: translateX(10px); /* Move logo 10px right */
+    transform: translateX(10px);
 }
 
 #converseCIAC {
@@ -173,12 +156,15 @@ body {
     cursor: pointer;
     text-transform: uppercase;
     font-family: 'Funnel Display', sans-serif;
-    font-weight: bold; /* Added bold */
-    transform: translate(10px, 40px); /* Move button 10px right and 40px down */
+    font-weight: bold;
     position: relative;
     left: 50%;
-    transform: translateX(-50%); /* This ensures true center alignment */
-    margin-top: 40px; /* Added to move down by 40px */
+    transform: translateX(-50%);
+    margin-top: 40px;
+}
+
+.brick-container {
+    display: none;
 }
 
 /* Page 5 - Camera View */
