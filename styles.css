@@ -1,15 +1,38 @@
-/* Your existing styles */
+/* Reset default margins and set full height */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Page styles */
+.page {
+    display: none;
+    width: 100%;
+    height: 100vh;
+}
+
+.page.active {
+    display: flex;
+}
+
 #page1 {
     background: black;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .logo-container {
-    width: 64px;  /* Matches SVG viewBox */
+    width: 64px;
     height: 64px;
     position: relative;
 }
