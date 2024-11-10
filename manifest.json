@@ -1,6 +1,6 @@
 {
-  "name": "Museum Interactive Guide",
-  "short_name": "Museum Guide",
+  "name": "Guide Interactif du Musée",
+  "short_name": "Guide Musée",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -13,4 +13,3 @@
     }
   ]
 }
-

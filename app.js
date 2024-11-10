@@ -371,37 +371,73 @@ class PageManager {
         const artworks = [
             {
                 id: 1,
-                title: "Sample Artwork 1",
+                title: "Étude pour l'Homme cherche midi",
+                artiste: "Caroline Challan-Belval",
+                date: "2011",
+                provenance: "Collection du CIAC",
+                picto: "SI CONCERNEE",
                 image: "rsc/art1.jpg",
-                keywords: ["abstract", "geometric", "blue", "modern"],
-                description: "A contemporary piece exploring geometric forms"
+                question: "Imaginons ce que fait cette personne...",
+                possibleAnswers: [
+                    "Du jardinage",
+                    "Le monsieur pêche",
+                    "Il randonne sur le Mont Chauve",
+                    "Cette personne skie",
+                    "Il saute à la perche",
+                    "Le monsieur fait voler un cerf-volant"
+                ]
             },
             {
                 id: 2,
-                title: "Sample Artwork 2",
+                title: "Sans titre",
+                artiste: "Michel Carlin",
+                date: "2000",
+                provenance: "Collection du CIAC Prêt",
+                picto: "OBSERVER",
                 image: "rsc/art2.jpg",
-                keywords: ["organic", "nature", "fluid", "green"],
-                description: "An organic composition inspired by natural forms"
+                question: "Que voyez-vous ? Que se passe-t-il ?",
+                possibleAnswers: [
+                    "Du jardinage",
+                    "Le monsieur pêche",
+                    "Il randonne sur le Mont Chauve",
+                    "Cette personne skie",
+                    "Il saute à la perche",
+                    "Le monsieur fait voler un cerf-volant"
+                ]
             },
             {
                 id: 3,
-                title: "Sample Artwork 3",
+                title: "Si on frappe une plume bleue avec un marteau, l'air est écrasé et l'on peut voir le bleu disparaître",
+                artiste: "Hélène Bertin, Aline Cado et Lamia Talaï",
+                date: "2023",
+                provenance: "Prêt",
+                picto: "Explorer",
                 image: "rsc/art3.jpg",
-                keywords: ["urban", "dynamic", "movement", "structure"],
-                description: "A dynamic interpretation of urban spaces"
+                question: "Regardons un instant la variété des couleurs des plumes. Que nous évoque cette œuvre ?",
+                possibleAnswers: [
+                    "Un oasis dans un désert coloré",
+                    "Une doudoune",
+                    "Un costume pour Halloween",
+                    "Les oiseaux déplumés",
+                    "Un oiseau rare",
+                    "Une palette de peinture",
+                    "Un paysage impressionniste"
+                ]
             }
         ];
-
-        return artworks[Math.floor(Math.random() * artworks.length)];
+    
+        const artwork = artworks[Math.floor(Math.random() * artworks.length)];
+        return artwork;
     }
-
+    
     initializeChat() {
         const messages = document.querySelector('.chat-messages');
         messages.innerHTML = '';
     
-        this.addChatMessage("Salut visiteur");
-        this.addChatMessage(`Vous avez photographié ${this.recognizedArtwork.title}`);
-        this.addChatMessage(this.recognizedArtwork.description);
+        this.addChatMessage("Bonjour visiteur");
+        this.addChatMessage(`Vous avez photographié "${this.recognizedArtwork.title}"`);
+        this.addChatMessage(`Une œuvre de ${this.recognizedArtwork.artiste} (${this.recognizedArtwork.date})`);
+        this.addChatMessage(`${this.recognizedArtwork.provenance}`);
         
         const thumbnailBubble = document.createElement('div');
         thumbnailBubble.className = 'chat-bubble';
@@ -411,14 +447,9 @@ class PageManager {
         thumbnail.style.height = '40px';
         thumbnailBubble.appendChild(thumbnail);
         
-        const keywordsPara = document.createElement('p');
-        keywordsPara.textContent = `Keywords: ${this.recognizedArtwork.keywords.join(', ')}`;
-        keywordsPara.style.marginTop = '5px';
-        thumbnailBubble.appendChild(keywordsPara);
-        
         messages.appendChild(thumbnailBubble);
     
-        this.addChatMessage("J'ai un œil de linx, n'est-ce pas?");
+        this.addChatMessage("J'ai un œil de lynx, n'est-ce pas ?");
         
         const chatButtons = document.querySelector('.chat-buttons');
         chatButtons.style.display = 'flex';
@@ -427,21 +458,13 @@ class PageManager {
         document.getElementById('yesBtn').style.display = 'block';
         document.getElementById('noBtn').style.display = 'block';
     }
-
-    addChatMessage(text) {
-        const messages = document.querySelector('.chat-messages');
-        const bubble = document.createElement('div');
-        bubble.className = 'chat-bubble';
-        bubble.textContent = text;
-        messages.appendChild(bubble);
-        messages.scrollTop = messages.scrollHeight;
-    }
-
+    
     handlePositiveResponse() {
         document.getElementById('yesBtn').style.display = 'none';
         document.getElementById('noBtn').style.display = 'none';
-        this.addChatMessage("Super! Let me ask you something about this artwork...");
+        this.addChatMessage(`${this.recognizedArtwork.picto} : ${this.recognizedArtwork.question}`);
         document.getElementById('messageInput').disabled = false;
+        document.getElementById('messageInput').placeholder = "Tapez votre réponse...";
     }
 
     handleNegativeResponse() {
