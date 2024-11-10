@@ -314,6 +314,18 @@ class PageManager {
         document.getElementById(`page${pageNumber}`).classList.add('active');
         this.currentPage = pageNumber;
 
+        if (pageNumber === 8) {
+            const overlay = document.querySelector('.instruction-overlay');
+            
+            overlay.addEventListener('click', () => {
+                overlay.classList.add('hidden');
+            }, { once: true });
+            
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 3000);
+        }
+
         if (pageNumber === 4) {
             this.initializeBrickWall();
         } else if (pageNumber === 5) {
