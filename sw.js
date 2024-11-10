@@ -1,7 +1,6 @@
-const CACHE_NAME = 'static-v10';  // Augmentation significative du numéro de version
+const CACHE_NAME = 'static-v11';  // Incrémentation du numéro de version
 
 self.addEventListener('install', event => {
-  // Force l'installation immédiate
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
       return cache.addAll([
@@ -22,43 +21,37 @@ self.addEventListener('install', event => {
       ]);
     })
   );
-  // Force l'activation
   self.skipWaiting();
 });
 
 self.addEventListener('activate', event => {
-  // Force la suppression des anciens caches
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            console.log('Suppression de l\'ancien cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
     }).then(() => {
-      console.log('New version activated');
+      console.log('Nouvelle version activée');
     })
   );
-  // Force la prise de contrôle immédiate
   return self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
   event.respondWith(
-    // Toujours essayer le réseau d'abord
     fetch(event.request)
       .then(networkResponse => {
-        // Mettre à jour le cache avec la nouvelle version
         caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, networkResponse.clone());
         });
         return networkResponse;
       })
       .catch(() => {
-        // Si le réseau échoue, utiliser la version en cache
         return caches.match(event.request);
       })
   );
