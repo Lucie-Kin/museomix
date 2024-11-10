@@ -377,6 +377,12 @@ class PageManager {
                 provenance: "Collection du CIAC",
                 picto: "SI CONCERNEE",
                 image: "rsc/art1.jpg",
+                characteristics: {
+                    format: "A4",
+                    mainColor: "blanc",
+                    elements: ["dessin noir", "fond blanc", "traits simples"],
+                    shape: "dessin minimaliste"
+                },
                 question: "Imaginons ce que fait cette personne...",
                 possibleAnswers: [
                     "Du jardinage",
@@ -395,6 +401,12 @@ class PageManager {
                 provenance: "Collection du CIAC Prêt",
                 picto: "OBSERVER",
                 image: "rsc/art2.jpg",
+                characteristics: {
+                    format: "carré",
+                    mainColor: "brun",
+                    elements: ["carré brun", "fond blanchâtre", "cadre bois clair"],
+                    shape: "forme géométrique"
+                },
                 question: "Que voyez-vous ? Que se passe-t-il ?",
                 possibleAnswers: [
                     "Du jardinage",
@@ -413,6 +425,12 @@ class PageManager {
                 provenance: "Prêt",
                 picto: "Explorer",
                 image: "rsc/art3.jpg",
+                characteristics: {
+                    format: "triangulaire",
+                    mainColor: "coloré",
+                    elements: ["aile", "plumes colorées", "forme triangulaire"],
+                    shape: "aile triangulaire"
+                },
                 question: "Regardons un instant la variété des couleurs des plumes. Que nous évoque cette œuvre ?",
                 possibleAnswers: [
                     "Un oasis dans un désert coloré",
@@ -426,8 +444,57 @@ class PageManager {
             }
         ];
     
-        const artwork = artworks[Math.floor(Math.random() * artworks.length)];
-        return artwork;
+        // Simuler une analyse basique de l'image capturée
+        const context = canvas.getContext('2d');
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+        
+        // Analyser les caractéristiques de l'image
+        let whitePixels = 0;
+        let coloredPixels = 0;
+        let darkPixels = 0;
+        let brownPixels = 0;
+    
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // Détecter les pixels blancs (valeurs RGB élevées)
+            if (r > 200 && g > 200 && b > 200) {
+                whitePixels++;
+            }
+            // Détecter les pixels colorés
+            else if (Math.max(r, g, b) > 150 && Math.abs(r - g) > 50 || Math.abs(r - b) > 50 || Math.abs(g - b) > 50) {
+                coloredPixels++;
+            }
+            // Détecter les pixels sombres
+            else if (r < 50 && g < 50 && b < 50) {
+                darkPixels++;
+            }
+            // Détecter les pixels bruns
+            else if (r > g && r > b && g > b && r - b > 50) {
+                brownPixels++;
+            }
+        }
+    
+        const totalPixels = data.length / 4;
+        const whiteRatio = whitePixels / totalPixels;
+        const coloredRatio = coloredPixels / totalPixels;
+        const darkRatio = darkPixels / totalPixels;
+        const brownRatio = brownPixels / totalPixels;
+    
+        // Déterminer l'œuvre la plus probable
+        if (whiteRatio > 0.7 && darkRatio > 0.1) {
+            return artworks[0]; // Art1: fond blanc avec dessin noir
+        } else if (brownRatio > 0.3 && whiteRatio > 0.3) {
+            return artworks[1]; // Art2: carré brun sur fond blanc
+        } else if (coloredRatio > 0.3) {
+            return artworks[2]; // Art3: aile colorée
+        }
+    
+        // Si aucune correspondance claire n'est trouvée, retourner une œuvre au hasard
+        return artworks[Math.floor(Math.random() * artworks.length)];
     }
     /*
     initializeChat() {
